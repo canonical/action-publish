@@ -1,0 +1,22 @@
+name: test-jamesh-publish-action
+base: core18
+version: '0.1'
+summary: A snap used to test the Github publish action
+description: |
+  This is a trivial snap used to test that the Github publish action
+  can successfully publish snaps to the store.
+
+grade: stable
+confinement: strict
+
+apps:
+  test-jamesh-publish-action:
+    command: hello.sh
+
+parts:
+  build:
+    # See 'snapcraft plugins'
+    plugin: dump
+    source: bin
+    stage:
+      - hello.sh

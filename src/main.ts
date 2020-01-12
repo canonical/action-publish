@@ -1,16 +1,17 @@
+// -*- mode: javascript; js-indent-level: 2 -*-
+
 import * as core from '@actions/core'
-import {wait} from './wait'
+import {SnapcraftPublisher} from './publish'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const loginData: string = core.getInput('store_login')
+    const snapFile: string = core.getInput('snap')
+    const release: string = core.getInput('release')
+    core.info(`Publishing snap "${snapFile}"...`)
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+    const publisher = new SnapcraftPublisher(loginData, snapFile, release)
+    await publisher.publish()
   } catch (error) {
     core.setFailed(error.message)
   }
