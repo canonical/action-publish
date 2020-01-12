@@ -1,117 +1,57 @@
 <p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
+  <a href="https://github.com/jhenstridge/snapcraft-publish-action/actions"><img alt="snapcraft-publish-action status" src="https://github.com/jhenstridge/snapcraft-publish-action/workflows/build-test/badge.svg"></a>
 </p>
 
-# Create a JavaScript Action using TypeScript
+# Snapcraft Publish Action
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
-
-This template includes compilication support, tests, a validation workflow, publishing, and versioning guidance.  
-
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
-
-## Create an action from this template
-
-Click the `Use this Template` and provide the new repo details for your action
-
-## Code in Master
-
-Install the dependencies  
-```bash
-$ npm install
-```
-
-Build the typescript
-```bash
-$ npm run build
-```
-
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-
-...
-```
-
-## Change action.yml
-
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos.  We will create a releases branch and only checkin production modules (core in this case). 
-
-Comment out node_modules in .gitignore and create a releases/v1 branch
-```bash
-# comment out in distribution branches
-# node_modules/
-```
-
-```bash
-$ git checkout -b releases/v1
-$ git commit -a -m "prod dependencies"
-```
-
-```bash
-$ npm prune --production
-$ git add node_modules
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing the releases/v1 branch
+This is a Github Action that can be used to publish [snap
+packages](https://snapcraft.io) to the Snap Store.  In most cases, it
+will be used with the `snapcraft-build-action` action to build the
+package.  The following workflow should be sufficient for:
 
 ```yaml
-uses: actions/typescript-action@releases/v1
-with:
-  milliseconds: 1000
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: jhenstridge/snapcraft-build-action@v1
+      id: build
+    - uses: jhenstridge/snapcraft-publish-action@v1
+      with:
+        store_login: ${{ secrets.STORE_LOGIN }}
+        snap: ${{ steps.build.outputs.snap }}
+        release: edge
 ```
 
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
+This will build the project, upload the result to the store, and
+release it to the `edge` channel.  If the `release` input parameter is
+omitted, then the build will not be uploaded but not released.
 
-## Usage:
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and tested action
+## Store Login
 
-```yaml
-uses: actions/typescript-action@v1
-with:
-  milliseconds: 1000
+In order to upload to the store, the action requires login
+credentials.  Rather than a user name and password, the action expects
+the data produced by the `snapcraft export-login` command.
+
+As well as preventing the exposure of the password, it also allows the
+credentials to be locked down to only the access the action requires:
+
+```sh
+$ snapcraft export-login --snaps=PACKAGE_NAME \
+      --acls package_push,package_update,package_release exported.txt
 ```
+
+This will produce a file `exported.txt` containing the login data,
+which should be a multi-line file starting with `[login.ubuntu.com]`.
+The credentials can be restricted further with the `--channels` and
+`--expires` arguments if desired.
+
+In order to make the credentials available to the workflow, they
+should be stored as a repository secret:
+
+1. choose the "Settings" tab.
+2. choose "Secrets" from the menu on the left.
+3. click "Add a new secret".
+4. set the name to `STORE_LOGIN` (or whatever is referenced in the workflow), and paste the contents of `exported.txt` as the value.
