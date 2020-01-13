@@ -1,10 +1,16 @@
-name: 'Snapcraft Build'
-description: 'Build a Snapcraft project'
+name: 'Snapcraft Publish'
+description: 'Publish a Snapcraft project to the Snap Store'
 author: 'James Henstridge'
 inputs:
-  path:
-    description: 'The location of the Snapcraft project.  Defaults to the base of the repository'
-    default: '.'
+  store_login:
+    description: 'The login data for the Snap Store produced with "snapcraft export-login"'
+    required: true
+  snap:
+    description: 'The snap file to upload to the store'
+    required: true
+  release:
+    description: 'A comma separated list of channels to release the snap to'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'
