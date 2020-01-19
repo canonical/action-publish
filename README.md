@@ -55,3 +55,5 @@ should be stored as a repository secret:
 2. choose "Secrets" from the menu on the left.
 3. click "Add a new secret".
 4. set the name to `STORE_LOGIN` (or whatever is referenced in the workflow), and paste the contents of `exported.txt` as the value.
+
+![Screenshot depicting secrets configuration](add-secret.jpg)
