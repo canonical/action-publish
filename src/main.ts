@@ -11,6 +11,7 @@ async function run(): Promise<void> {
     core.info(`Publishing snap "${snapFile}"...`)
 
     const publisher = new SnapcraftPublisher(loginData, snapFile, release)
+    await publisher.validate()
     await publisher.publish()
   } catch (error) {
     core.setFailed(error.message)

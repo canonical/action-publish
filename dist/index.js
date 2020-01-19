@@ -981,6 +981,7 @@ function run() {
             const release = core.getInput('release');
             core.info(`Publishing snap "${snapFile}"...`);
             const publisher = new publish_1.SnapcraftPublisher(loginData, snapFile, release);
+            yield publisher.validate();
             yield publisher.publish();
         }
         catch (error) {
@@ -1610,6 +1611,19 @@ class SnapcraftPublisher {
         this.loginData = loginData;
         this.snapFile = snapFile;
         this.release = release;
+    }
+    validate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.loginData) {
+                throw new Error('login_data is empty');
+            }
+            try {
+                yield fs.promises.access(this.snapFile, fs.constants.R_OK);
+            }
+            catch (error) {
+                throw new Error(`cannot read snap file "${this.snapFile}"`);
+            }
+        });
     }
     login() {
         return __awaiter(this, void 0, void 0, function* () {

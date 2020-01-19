@@ -19,6 +19,17 @@ export class SnapcraftPublisher {
     this.release = release
   }
 
+  async validate(): Promise<void> {
+    if (!this.loginData) {
+      throw new Error('login_data is empty')
+    }
+    try {
+      await fs.promises.access(this.snapFile, fs.constants.R_OK)
+    } catch (error) {
+      throw new Error(`cannot read snap file "${this.snapFile}"`)
+    }
+  }
+
   async login(): Promise<void> {
     const tmpdir = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), 'login-data-')
