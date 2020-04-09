@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/jhenstridge/snapcraft-publish-action/actions"><img alt="snapcraft-publish-action status" src="https://github.com/jhenstridge/snapcraft-publish-action/workflows/build-test/badge.svg"></a>
+  <a href="https://github.com/snapcore/action-publish/actions"><img alt="snapcraft-publish-action status" src="https://github.com/snapcore/action-publish/workflows/build-test/badge.svg"></a>
 </p>
 
 # Snapcraft Publish Action
@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: jhenstridge/snapcraft-build-action@v1
+    - uses: snapcore/action-build@v1
       id: build
-    - uses: jhenstridge/snapcraft-publish-action@v1
+    - uses: snapcore/action-publish@v1
       with:
         store_login: ${{ secrets.STORE_LOGIN }}
         snap: ${{ steps.build.outputs.snap }}

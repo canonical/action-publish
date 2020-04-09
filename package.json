@@ -1,6 +1,6 @@
 {
   "name": "snapcraft-publish-action",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "A Github action that publishes snapcraft projects",
   "main": "lib/main.js",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jhenstridge/snapcraft-publish-action.git"
+    "url": "git+https://github.com/snapcore/action-publish.git"
   },
   "keywords": [
     "actions",
