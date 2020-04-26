@@ -1,12 +1,10 @@
 // -*- mode: javascript; js-indent-level: 2 -*-
 
+import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 import * as exec from '@actions/exec'
 import * as tools from './tools'
-// Importing as an ECMAScript Module blocks access to fs.promises:
-//   https://github.com/nodejs/node/issues/21014
-import fs = require('fs') // eslint-disable-line @typescript-eslint/no-require-imports
 
 export class SnapcraftPublisher {
   loginData: string

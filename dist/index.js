@@ -1548,11 +1548,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs = __importStar(__webpack_require__(747));
 const core = __importStar(__webpack_require__(470));
 const exec = __importStar(__webpack_require__(986));
-// Importing as an ECMAScript Module blocks access to fs.promises:
-//   https://github.com/nodejs/node/issues/21014
-const fs = __webpack_require__(747); // eslint-disable-line @typescript-eslint/no-require-imports
 function haveExecutable(path) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -1625,13 +1623,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs = __importStar(__webpack_require__(747));
 const os = __importStar(__webpack_require__(87));
 const path = __importStar(__webpack_require__(622));
 const exec = __importStar(__webpack_require__(986));
 const tools = __importStar(__webpack_require__(735));
-// Importing as an ECMAScript Module blocks access to fs.promises:
-//   https://github.com/nodejs/node/issues/21014
-const fs = __webpack_require__(747); // eslint-disable-line @typescript-eslint/no-require-imports
 class SnapcraftPublisher {
     constructor(loginData, snapFile, release) {
         this.loginData = loginData;
