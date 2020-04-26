@@ -34,8 +34,10 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(198);
+/******/ 		return __webpack_require__(431);
 /******/ 	};
+/******/ 	// initialize runtime
+/******/ 	runtime(__webpack_require__);
 /******/
 /******/ 	// run startup
 /******/ 	return startup();
@@ -948,52 +950,6 @@ module.exports = require("child_process");
 
 /***/ }),
 
-/***/ 198:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-// -*- mode: javascript; js-indent-level: 2 -*-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const publish_1 = __webpack_require__(806);
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const loginData = core.getInput('store_login');
-            const snapFile = core.getInput('snap');
-            const release = core.getInput('release');
-            core.info(`Publishing snap "${snapFile}"...`);
-            const publisher = new publish_1.SnapcraftPublisher(loginData, snapFile, release);
-            yield publisher.validate();
-            yield publisher.publish();
-        }
-        catch (error) {
-            core.setFailed(error.message);
-        }
-    });
-}
-run();
-
-
-/***/ }),
-
 /***/ 357:
 /***/ (function(module) {
 
@@ -1002,87 +958,186 @@ module.exports = require("assert");
 /***/ }),
 
 /***/ 431:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
+/***/ (function(__unusedmodule, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
 
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __webpack_require__(470);
+
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __webpack_require__(747);
+
+// EXTERNAL MODULE: external "os"
+var external_os_ = __webpack_require__(87);
+
+// EXTERNAL MODULE: external "path"
+var external_path_ = __webpack_require__(622);
+
+// EXTERNAL MODULE: ./node_modules/@actions/exec/lib/exec.js
+var exec = __webpack_require__(986);
+
+// CONCATENATED MODULE: ./lib/tools.js
+// -*- mode: javascript; js-indent-level: 2 -*-
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const os = __importStar(__webpack_require__(87));
-/**
- * Commands
- *
- * Command Format:
- *   ::name key=value,key=value::message
- *
- * Examples:
- *   ::warning::This is the message
- *   ::set-env name=MY_VAR::some value
- */
-function issueCommand(command, properties, message) {
-    const cmd = new Command(command, properties, message);
-    process.stdout.write(cmd.toString() + os.EOL);
-}
-exports.issueCommand = issueCommand;
-function issue(name, message = '') {
-    issueCommand(name, {}, message);
-}
-exports.issue = issue;
-const CMD_STRING = '::';
-class Command {
-    constructor(command, properties, message) {
-        if (!command) {
-            command = 'missing.command';
+
+
+
+function haveExecutable(path) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield Object(external_fs_.promises.access)(path, external_fs_.constants.X_OK);
         }
-        this.command = command;
-        this.properties = properties;
-        this.message = message;
+        catch (err) {
+            return false;
+        }
+        return true;
+    });
+}
+function ensureSnapd() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const haveSnapd = yield haveExecutable('/usr/bin/snap');
+        if (!haveSnapd) {
+            Object(core.info)('Installing snapd...');
+            yield Object(exec.exec)('sudo', ['apt-get', 'update', '-q']);
+            yield Object(exec.exec)('sudo', ['apt-get', 'install', '-qy', 'snapd']);
+        }
+        // The Github worker environment has weird permissions on the root,
+        // which trip up snap-confine.
+        const root = yield Object(external_fs_.promises.stat)('/');
+        if (root.uid !== 0 || root.gid !== 0) {
+            yield Object(exec.exec)('sudo', ['chown', 'root:root', '/']);
+        }
+    });
+}
+function ensureSnapcraft() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const haveSnapcraft = yield haveExecutable('/snap/bin/snapcraft');
+        if (!haveSnapcraft) {
+            Object(core.info)('Installing Snapcraft...');
+            yield Object(exec.exec)('sudo', ['snap', 'install', '--classic', 'snapcraft']);
+        }
+    });
+}
+
+// CONCATENATED MODULE: ./lib/publish.js
+// -*- mode: javascript; js-indent-level: 2 -*-
+var publish_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+
+
+
+class publish_SnapcraftPublisher {
+    constructor(loginData, snapFile, release) {
+        this.loginData = loginData;
+        this.snapFile = snapFile;
+        this.release = release;
     }
-    toString() {
-        let cmdStr = CMD_STRING + this.command;
-        if (this.properties && Object.keys(this.properties).length > 0) {
-            cmdStr += ' ';
-            let first = true;
-            for (const key in this.properties) {
-                if (this.properties.hasOwnProperty(key)) {
-                    const val = this.properties[key];
-                    if (val) {
-                        if (first) {
-                            first = false;
-                        }
-                        else {
-                            cmdStr += ',';
-                        }
-                        cmdStr += `${key}=${escapeProperty(val)}`;
-                    }
-                }
+    validate() {
+        return publish_awaiter(this, void 0, void 0, function* () {
+            if (!this.loginData) {
+                throw new Error('login_data is empty');
             }
-        }
-        cmdStr += `${CMD_STRING}${escapeData(this.message)}`;
-        return cmdStr;
+            try {
+                yield Object(external_fs_.promises.access)(this.snapFile, external_fs_.constants.R_OK);
+            }
+            catch (error) {
+                throw new Error(`cannot read snap file "${this.snapFile}"`);
+            }
+        });
+    }
+    login() {
+        return publish_awaiter(this, void 0, void 0, function* () {
+            const tmpdir = yield Object(external_fs_.promises.mkdtemp)(Object(external_path_.join)(Object(external_os_.tmpdir)(), 'login-data-'));
+            try {
+                const loginfile = Object(external_path_.join)(tmpdir, 'login.txt');
+                yield Object(external_fs_.promises.writeFile)(loginfile, this.loginData);
+                yield Object(exec.exec)('snapcraft', ['login', '--with', loginfile]);
+            }
+            finally {
+                yield Object(external_fs_.promises.rmdir)(tmpdir, { recursive: true });
+            }
+        });
+    }
+    push() {
+        return publish_awaiter(this, void 0, void 0, function* () {
+            const args = ['push', this.snapFile];
+            if (this.release) {
+                args.push('--release');
+                args.push(this.release);
+            }
+            yield Object(exec.exec)('snapcraft', args);
+        });
+    }
+    logout() {
+        return publish_awaiter(this, void 0, void 0, function* () {
+            yield Object(exec.exec)('snapcraft', ['logout']);
+        });
+    }
+    publish() {
+        return publish_awaiter(this, void 0, void 0, function* () {
+            yield ensureSnapd();
+            yield ensureSnapcraft();
+            yield this.login();
+            try {
+                yield this.push();
+            }
+            finally {
+                yield this.logout();
+            }
+        });
     }
 }
-function escapeData(s) {
-    return (s || '')
-        .replace(/%/g, '%25')
-        .replace(/\r/g, '%0D')
-        .replace(/\n/g, '%0A');
+
+// CONCATENATED MODULE: ./lib/main.js
+// -*- mode: javascript; js-indent-level: 2 -*-
+var main_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+
+function run() {
+    return main_awaiter(this, void 0, void 0, function* () {
+        try {
+            const loginData = Object(core.getInput)('store_login');
+            const snapFile = Object(core.getInput)('snap');
+            const release = Object(core.getInput)('release');
+            Object(core.info)(`Publishing snap "${snapFile}"...`);
+            const publisher = new publish_SnapcraftPublisher(loginData, snapFile, release);
+            yield publisher.validate();
+            yield publisher.publish();
+        }
+        catch (error) {
+            Object(core.setFailed)(error.message);
+        }
+    });
 }
-function escapeProperty(s) {
-    return (s || '')
-        .replace(/%/g, '%25')
-        .replace(/\r/g, '%0D')
-        .replace(/\n/g, '%0A')
-        .replace(/:/g, '%3A')
-        .replace(/,/g, '%2C');
-}
-//# sourceMappingURL=command.js.map
+run();
+
 
 /***/ }),
 
@@ -1108,7 +1163,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const command_1 = __webpack_require__(431);
+const command_1 = __webpack_require__(804);
 const os = __importStar(__webpack_require__(87));
 const path = __importStar(__webpack_require__(622));
 /**
@@ -1525,74 +1580,6 @@ function isUnixExecutable(stats) {
 
 /***/ }),
 
-/***/ 735:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-// -*- mode: javascript; js-indent-level: 2 -*-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const fs = __importStar(__webpack_require__(747));
-const core = __importStar(__webpack_require__(470));
-const exec = __importStar(__webpack_require__(986));
-function haveExecutable(path) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield fs.promises.access(path, fs.constants.X_OK);
-        }
-        catch (err) {
-            return false;
-        }
-        return true;
-    });
-}
-function ensureSnapd() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const haveSnapd = yield haveExecutable('/usr/bin/snap');
-        if (!haveSnapd) {
-            core.info('Installing snapd...');
-            yield exec.exec('sudo', ['apt-get', 'update', '-q']);
-            yield exec.exec('sudo', ['apt-get', 'install', '-qy', 'snapd']);
-        }
-        // The Github worker environment has weird permissions on the root,
-        // which trip up snap-confine.
-        const root = yield fs.promises.stat('/');
-        if (root.uid !== 0 || root.gid !== 0) {
-            yield exec.exec('sudo', ['chown', 'root:root', '/']);
-        }
-    });
-}
-exports.ensureSnapd = ensureSnapd;
-function ensureSnapcraft() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const haveSnapcraft = yield haveExecutable('/snap/bin/snapcraft');
-        if (!haveSnapcraft) {
-            core.info('Installing Snapcraft...');
-            yield exec.exec('sudo', ['snap', 'install', '--classic', 'snapcraft']);
-        }
-    });
-}
-exports.ensureSnapcraft = ensureSnapcraft;
-
-
-/***/ }),
-
 /***/ 747:
 /***/ (function(module) {
 
@@ -1600,21 +1587,11 @@ module.exports = require("fs");
 
 /***/ }),
 
-/***/ 806:
+/***/ 804:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
-// -*- mode: javascript; js-indent-level: 2 -*-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -1623,74 +1600,75 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = __importStar(__webpack_require__(747));
 const os = __importStar(__webpack_require__(87));
-const path = __importStar(__webpack_require__(622));
-const exec = __importStar(__webpack_require__(986));
-const tools = __importStar(__webpack_require__(735));
-class SnapcraftPublisher {
-    constructor(loginData, snapFile, release) {
-        this.loginData = loginData;
-        this.snapFile = snapFile;
-        this.release = release;
+/**
+ * Commands
+ *
+ * Command Format:
+ *   ::name key=value,key=value::message
+ *
+ * Examples:
+ *   ::warning::This is the message
+ *   ::set-env name=MY_VAR::some value
+ */
+function issueCommand(command, properties, message) {
+    const cmd = new Command(command, properties, message);
+    process.stdout.write(cmd.toString() + os.EOL);
+}
+exports.issueCommand = issueCommand;
+function issue(name, message = '') {
+    issueCommand(name, {}, message);
+}
+exports.issue = issue;
+const CMD_STRING = '::';
+class Command {
+    constructor(command, properties, message) {
+        if (!command) {
+            command = 'missing.command';
+        }
+        this.command = command;
+        this.properties = properties;
+        this.message = message;
     }
-    validate() {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.loginData) {
-                throw new Error('login_data is empty');
+    toString() {
+        let cmdStr = CMD_STRING + this.command;
+        if (this.properties && Object.keys(this.properties).length > 0) {
+            cmdStr += ' ';
+            let first = true;
+            for (const key in this.properties) {
+                if (this.properties.hasOwnProperty(key)) {
+                    const val = this.properties[key];
+                    if (val) {
+                        if (first) {
+                            first = false;
+                        }
+                        else {
+                            cmdStr += ',';
+                        }
+                        cmdStr += `${key}=${escapeProperty(val)}`;
+                    }
+                }
             }
-            try {
-                yield fs.promises.access(this.snapFile, fs.constants.R_OK);
-            }
-            catch (error) {
-                throw new Error(`cannot read snap file "${this.snapFile}"`);
-            }
-        });
-    }
-    login() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const tmpdir = yield fs.promises.mkdtemp(path.join(os.tmpdir(), 'login-data-'));
-            try {
-                const loginfile = path.join(tmpdir, 'login.txt');
-                yield fs.promises.writeFile(loginfile, this.loginData);
-                yield exec.exec('snapcraft', ['login', '--with', loginfile]);
-            }
-            finally {
-                yield fs.promises.rmdir(tmpdir, { recursive: true });
-            }
-        });
-    }
-    push() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const args = ['push', this.snapFile];
-            if (this.release) {
-                args.push('--release');
-                args.push(this.release);
-            }
-            yield exec.exec('snapcraft', args);
-        });
-    }
-    logout() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield exec.exec('snapcraft', ['logout']);
-        });
-    }
-    publish() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield tools.ensureSnapd();
-            yield tools.ensureSnapcraft();
-            yield this.login();
-            try {
-                yield this.push();
-            }
-            finally {
-                yield this.logout();
-            }
-        });
+        }
+        cmdStr += `${CMD_STRING}${escapeData(this.message)}`;
+        return cmdStr;
     }
 }
-exports.SnapcraftPublisher = SnapcraftPublisher;
-
+function escapeData(s) {
+    return (s || '')
+        .replace(/%/g, '%25')
+        .replace(/\r/g, '%0D')
+        .replace(/\n/g, '%0A');
+}
+function escapeProperty(s) {
+    return (s || '')
+        .replace(/%/g, '%25')
+        .replace(/\r/g, '%0D')
+        .replace(/\n/g, '%0A')
+        .replace(/:/g, '%3A')
+        .replace(/,/g, '%2C');
+}
+//# sourceMappingURL=command.js.map
 
 /***/ }),
 
@@ -1738,4 +1716,62 @@ exports.exec = exec;
 
 /***/ })
 
-/******/ });
+/******/ },
+/******/ function(__webpack_require__) { // webpackRuntimeModules
+/******/ 	"use strict";
+/******/ 
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getter */
+/******/ 	!function() {
+/******/ 		// define getter function for harmony exports
+/******/ 		var hasOwnProperty = Object.prototype.hasOwnProperty;
+/******/ 		__webpack_require__.d = function(exports, name, getter) {
+/******/ 			if(!hasOwnProperty.call(exports, name)) {
+/******/ 				Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/create fake namespace object */
+/******/ 	!function() {
+/******/ 		// create a fake namespace object
+/******/ 		// mode & 1: value is a module id, require it
+/******/ 		// mode & 2: merge all properties of value into the ns
+/******/ 		// mode & 4: return value when already ns object
+/******/ 		// mode & 8|1: behave like require
+/******/ 		__webpack_require__.t = function(value, mode) {
+/******/ 			if(mode & 1) value = this(value);
+/******/ 			if(mode & 8) return value;
+/******/ 			if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 			var ns = Object.create(null);
+/******/ 			__webpack_require__.r(ns);
+/******/ 			Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 			if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 			return ns;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function getDefault() { return module['default']; } :
+/******/ 				function getModuleExports() { return module; };
+/******/ 			__webpack_require__.d(getter, 'a', getter);
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ }
+);
