@@ -41,8 +41,8 @@ export class SnapcraftPublisher {
     }
   }
 
-  async push(): Promise<void> {
-    const args = ['push', this.snapFile]
+  async upload(): Promise<void> {
+    const args = ['upload', this.snapFile]
     if (this.release) {
       args.push('--release')
       args.push(this.release)
@@ -59,7 +59,7 @@ export class SnapcraftPublisher {
     await tools.ensureSnapcraft()
     await this.login()
     try {
-      await this.push()
+      await this.upload()
     } finally {
       await this.logout()
     }

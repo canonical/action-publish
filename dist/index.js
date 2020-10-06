@@ -1158,9 +1158,9 @@ class publish_SnapcraftPublisher {
             }
         });
     }
-    push() {
+    upload() {
         return publish_awaiter(this, void 0, void 0, function* () {
-            const args = ['push', this.snapFile];
+            const args = ['upload', this.snapFile];
             if (this.release) {
                 args.push('--release');
                 args.push(this.release);
@@ -1179,7 +1179,7 @@ class publish_SnapcraftPublisher {
             yield ensureSnapcraft();
             yield this.login();
             try {
-                yield this.push();
+                yield this.upload();
             }
             finally {
                 yield this.logout();
