@@ -96,7 +96,10 @@ test('SnapcraftPublisher.publish publishes the snap', async () => {
     '--with',
     expect.any(String)
   ])
-  expect(execMock).toHaveBeenCalledWith('snapcraft', ['push', 'filename.snap'])
+  expect(execMock).toHaveBeenCalledWith('snapcraft', [
+    'upload',
+    'filename.snap'
+  ])
   expect(execMock).toHaveBeenCalledWith('snapcraft', ['logout'])
 })
 
@@ -130,7 +133,7 @@ test('SnapcraftPublisher.publish can release the published snap', async () => {
     expect.any(String)
   ])
   expect(execMock).toHaveBeenCalledWith('snapcraft', [
-    'push',
+    'upload',
     'filename.snap',
     '--release',
     'edge'
