@@ -10,7 +10,7 @@ async function run(): Promise<void> {
     const release: string = core.getInput('release')
     core.info(`Publishing snap "${snapFile}"...`)
 
-    const publisher = new SnapcraftPublisher(loginData, snapFile, release)
+    const publisher = new SnapcraftPublisher({loginData, snapFile, release})
     await publisher.validate()
     await publisher.publish()
   } catch (error) {

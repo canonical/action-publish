@@ -1141,10 +1141,10 @@ var publish_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _
 
 
 class publish_SnapcraftPublisher {
-    constructor(loginData, snapFile, release) {
-        this.loginData = loginData;
-        this.snapFile = snapFile;
-        this.release = release;
+    constructor(options) {
+        this.loginData = options.loginData;
+        this.snapFile = options.snapFile;
+        this.release = options.release;
     }
     validate() {
         return publish_awaiter(this, void 0, void 0, function* () {
@@ -1222,7 +1222,7 @@ function run() {
             const snapFile = Object(core.getInput)('snap');
             const release = Object(core.getInput)('release');
             Object(core.info)(`Publishing snap "${snapFile}"...`);
-            const publisher = new publish_SnapcraftPublisher(loginData, snapFile, release);
+            const publisher = new publish_SnapcraftPublisher({ loginData, snapFile, release });
             yield publisher.validate();
             yield publisher.publish();
         }

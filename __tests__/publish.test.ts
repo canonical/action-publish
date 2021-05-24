@@ -13,15 +13,27 @@ test('SnapcraftPublisher.validate validates inputs', async () => {
   const missingSnap = path.join(__dirname, 'no-such-snap.snap')
 
   // No error on valid inputs
-  let publisher = new publish.SnapcraftPublisher('login-data', existingSnap, '')
+  let publisher = new publish.SnapcraftPublisher({
+    loginData: 'login-data',
+    snapFile: existingSnap,
+    release: ''
+  })
   await publisher.validate()
 
   // Missing login data
-  publisher = new publish.SnapcraftPublisher('', existingSnap, '')
+  publisher = new publish.SnapcraftPublisher({
+    loginData: '',
+    snapFile: existingSnap,
+    release: ''
+  })
   await expect(publisher.validate()).rejects.toThrow('login_data is empty')
 
   // Missing snap
-  publisher = new publish.SnapcraftPublisher('login-data', missingSnap, '')
+  publisher = new publish.SnapcraftPublisher({
+    loginData: 'login-data',
+    snapFile: missingSnap,
+    release: ''
+  })
   await expect(publisher.validate()).rejects.toThrow(
     `cannot read snap file "${missingSnap}"`
   )
@@ -38,7 +50,11 @@ test('SnapcraftPublisher.login deletes the login data', async () => {
       }
     )
 
-  const publisher = new publish.SnapcraftPublisher('login-data', '', '')
+  const publisher = new publish.SnapcraftPublisher({
+    loginData: 'login-data',
+    snapFile: '',
+    release: ''
+  })
   await publisher.login()
   expect(execMock).toHaveBeenCalledWith('snapcraft', [
     'login',
@@ -60,7 +76,11 @@ test('SnapcraftPublisher.login deletes the login data on login failure', async (
       }
     )
 
-  const publisher = new publish.SnapcraftPublisher('login-data', '', '')
+  const publisher = new publish.SnapcraftPublisher({
+    loginData: 'login-data',
+    snapFile: '',
+    release: ''
+  })
   await expect(publisher.login()).rejects.toThrow('login failure')
   expect(execMock).toHaveBeenCalledWith('snapcraft', [
     'login',
@@ -88,11 +108,11 @@ test('SnapcraftPublisher.publish publishes the snap', async () => {
       }
     )
 
-  const publisher = new publish.SnapcraftPublisher(
-    'login-data',
-    'filename.snap',
-    ''
-  )
+  const publisher = new publish.SnapcraftPublisher({
+    loginData: 'login-data',
+    snapFile: 'filename.snap',
+    release: ''
+  })
   await publisher.publish()
 
   expect(ensureSnapd).toHaveBeenCalled()
@@ -126,11 +146,11 @@ test('SnapcraftPublisher.publish can release the published snap', async () => {
       }
     )
 
-  const publisher = new publish.SnapcraftPublisher(
-    'login-data',
-    'filename.snap',
-    'edge'
-  )
+  const publisher = new publish.SnapcraftPublisher({
+    loginData: 'login-data',
+    snapFile: 'filename.snap',
+    release: 'edge'
+  })
   await publisher.publish()
 
   expect(ensureSnapd).toHaveBeenCalled()
