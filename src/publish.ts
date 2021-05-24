@@ -6,15 +6,21 @@ import * as path from 'path'
 import * as exec from '@actions/exec'
 import * as tools from './tools'
 
+interface SnapcraftPublisherOptions {
+  loginData: string
+  snapFile: string
+  release: string
+}
+
 export class SnapcraftPublisher {
   loginData: string
   snapFile: string
   release: string
 
-  constructor(loginData: string, snapFile: string, release: string) {
-    this.loginData = loginData
-    this.snapFile = snapFile
-    this.release = release
+  constructor(options: SnapcraftPublisherOptions) {
+    this.loginData = options.loginData
+    this.snapFile = options.snapFile
+    this.release = options.release
   }
 
   async validate(): Promise<void> {
