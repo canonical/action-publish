@@ -30,11 +30,13 @@ test('SnapcraftPublisher.validate validates inputs', async () => {
 test('SnapcraftPublisher.login deletes the login data', async () => {
   expect.assertions(2)
 
-  const execMock = jest.spyOn(exec, 'exec').mockImplementation(
-    async (program: string, args?: string[]): Promise<number> => {
-      return 0
-    }
-  )
+  const execMock = jest
+    .spyOn(exec, 'exec')
+    .mockImplementation(
+      async (program: string, args?: string[]): Promise<number> => {
+        return 0
+      }
+    )
 
   const publisher = new publish.SnapcraftPublisher('login-data', '', '')
   await publisher.login()
@@ -50,11 +52,13 @@ test('SnapcraftPublisher.login deletes the login data', async () => {
 test('SnapcraftPublisher.login deletes the login data on login failure', async () => {
   expect.assertions(3)
 
-  const execMock = jest.spyOn(exec, 'exec').mockImplementation(
-    async (program: string, args?: string[]): Promise<number> => {
-      throw new Error('login failure')
-    }
-  )
+  const execMock = jest
+    .spyOn(exec, 'exec')
+    .mockImplementation(
+      async (program: string, args?: string[]): Promise<number> => {
+        throw new Error('login failure')
+      }
+    )
 
   const publisher = new publish.SnapcraftPublisher('login-data', '', '')
   await expect(publisher.login()).rejects.toThrow('login failure')
@@ -76,11 +80,13 @@ test('SnapcraftPublisher.publish publishes the snap', async () => {
   const ensureSnapcraft = jest
     .spyOn(tools, 'ensureSnapcraft')
     .mockImplementation(async (): Promise<void> => {})
-  const execMock = jest.spyOn(exec, 'exec').mockImplementation(
-    async (program: string, args?: string[]): Promise<number> => {
-      return 0
-    }
-  )
+  const execMock = jest
+    .spyOn(exec, 'exec')
+    .mockImplementation(
+      async (program: string, args?: string[]): Promise<number> => {
+        return 0
+      }
+    )
 
   const publisher = new publish.SnapcraftPublisher(
     'login-data',
@@ -112,11 +118,13 @@ test('SnapcraftPublisher.publish can release the published snap', async () => {
   const ensureSnapcraft = jest
     .spyOn(tools, 'ensureSnapcraft')
     .mockImplementation(async (): Promise<void> => {})
-  const execMock = jest.spyOn(exec, 'exec').mockImplementation(
-    async (program: string, args?: string[]): Promise<number> => {
-      return 0
-    }
-  )
+  const execMock = jest
+    .spyOn(exec, 'exec')
+    .mockImplementation(
+      async (program: string, args?: string[]): Promise<number> => {
+        return 0
+      }
+    )
 
   const publisher = new publish.SnapcraftPublisher(
     'login-data',

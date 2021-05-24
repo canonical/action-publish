@@ -13,24 +13,31 @@ afterEach(() => {
 test('ensureSnapd installs snapd if needed', async () => {
   expect.assertions(4)
 
-  const accessMock = jest.spyOn(fs.promises, 'access').mockImplementation(
-    async (filename: fs.PathLike, mode?: number | undefined): Promise<void> => {
-      throw new Error('not found')
-    }
-  )
-  const statMock = jest.spyOn(fs.promises, 'stat').mockImplementation(
-    async (filename: fs.PathLike): Promise<fs.Stats> => {
+  const accessMock = jest
+    .spyOn(fs.promises, 'access')
+    .mockImplementation(
+      async (
+        filename: fs.PathLike,
+        mode?: number | undefined
+      ): Promise<void> => {
+        throw new Error('not found')
+      }
+    )
+  const statMock = jest
+    .spyOn(fs.promises, 'stat')
+    .mockImplementation(async (filename: fs.PathLike): Promise<fs.Stats> => {
       const s = new fs.Stats()
       s.uid = 0
       s.gid = 0
       return s
-    }
-  )
-  const execMock = jest.spyOn(exec, 'exec').mockImplementation(
-    async (program: string, args?: string[]): Promise<number> => {
-      return 0
-    }
-  )
+    })
+  const execMock = jest
+    .spyOn(exec, 'exec')
+    .mockImplementation(
+      async (program: string, args?: string[]): Promise<number> => {
+        return 0
+      }
+    )
 
   await tools.ensureSnapd()
 
@@ -60,19 +67,21 @@ test('ensureSnapd is a no-op if snapd is installed', async () => {
         mode?: number | undefined
       ): Promise<void> => {}
     )
-  const statMock = jest.spyOn(fs.promises, 'stat').mockImplementation(
-    async (filename: fs.PathLike): Promise<fs.Stats> => {
+  const statMock = jest
+    .spyOn(fs.promises, 'stat')
+    .mockImplementation(async (filename: fs.PathLike): Promise<fs.Stats> => {
       const s = new fs.Stats()
       s.uid = 0
       s.gid = 0
       return s
-    }
-  )
-  const execMock = jest.spyOn(exec, 'exec').mockImplementation(
-    async (program: string, args?: string[]): Promise<number> => {
-      return 0
-    }
-  )
+    })
+  const execMock = jest
+    .spyOn(exec, 'exec')
+    .mockImplementation(
+      async (program: string, args?: string[]): Promise<number> => {
+        return 0
+      }
+    )
 
   await tools.ensureSnapd()
 
@@ -92,19 +101,21 @@ test('ensureSnapd fixes permissions on the root directory', async () => {
         mode?: number | undefined
       ): Promise<void> => {}
     )
-  const statMock = jest.spyOn(fs.promises, 'stat').mockImplementation(
-    async (filename: fs.PathLike): Promise<fs.Stats> => {
+  const statMock = jest
+    .spyOn(fs.promises, 'stat')
+    .mockImplementation(async (filename: fs.PathLike): Promise<fs.Stats> => {
       const s = new fs.Stats()
       s.uid = 500
       s.gid = 0
       return s
-    }
-  )
-  const execMock = jest.spyOn(exec, 'exec').mockImplementation(
-    async (program: string, args?: string[]): Promise<number> => {
-      return 0
-    }
-  )
+    })
+  const execMock = jest
+    .spyOn(exec, 'exec')
+    .mockImplementation(
+      async (program: string, args?: string[]): Promise<number> => {
+        return 0
+      }
+    )
 
   await tools.ensureSnapd()
 
@@ -116,16 +127,23 @@ test('ensureSnapd fixes permissions on the root directory', async () => {
 test('ensureSnapcraft installs Snapcraft if needed', async () => {
   expect.assertions(2)
 
-  const accessMock = jest.spyOn(fs.promises, 'access').mockImplementation(
-    async (filename: fs.PathLike, mode?: number | undefined): Promise<void> => {
-      throw new Error('not found')
-    }
-  )
-  const execMock = jest.spyOn(exec, 'exec').mockImplementation(
-    async (program: string, args?: string[]): Promise<number> => {
-      return 0
-    }
-  )
+  const accessMock = jest
+    .spyOn(fs.promises, 'access')
+    .mockImplementation(
+      async (
+        filename: fs.PathLike,
+        mode?: number | undefined
+      ): Promise<void> => {
+        throw new Error('not found')
+      }
+    )
+  const execMock = jest
+    .spyOn(exec, 'exec')
+    .mockImplementation(
+      async (program: string, args?: string[]): Promise<number> => {
+        return 0
+      }
+    )
 
   await tools.ensureSnapcraft()
 
@@ -141,16 +159,23 @@ test('ensureSnapcraft installs Snapcraft if needed', async () => {
 test('ensureSnapcraft is a no-op if Snapcraft is installed', async () => {
   expect.assertions(2)
 
-  const accessMock = jest.spyOn(fs.promises, 'access').mockImplementation(
-    async (filename: fs.PathLike, mode?: number | undefined): Promise<void> => {
-      return
-    }
-  )
-  const execMock = jest.spyOn(exec, 'exec').mockImplementation(
-    async (program: string, args?: string[]): Promise<number> => {
-      return 0
-    }
-  )
+  const accessMock = jest
+    .spyOn(fs.promises, 'access')
+    .mockImplementation(
+      async (
+        filename: fs.PathLike,
+        mode?: number | undefined
+      ): Promise<void> => {
+        return
+      }
+    )
+  const execMock = jest
+    .spyOn(exec, 'exec')
+    .mockImplementation(
+      async (program: string, args?: string[]): Promise<number> => {
+        return 0
+      }
+    )
 
   await tools.ensureSnapcraft()
 
