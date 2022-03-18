@@ -1,8 +1,8 @@
 // -*- mode: javascript; js-indent-level: 2 -*-
 
-import * as fs from 'fs'
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
+import * as fs from 'fs'
 
 async function haveExecutable(path: string): Promise<boolean> {
   try {
