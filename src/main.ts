@@ -14,7 +14,7 @@ async function run(): Promise<void> {
     await publisher.validate()
     await publisher.publish()
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed((error as Error)?.message)
   }
 }
 
