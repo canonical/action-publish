@@ -7,7 +7,7 @@ branding:
 inputs:
   store_login:
     description: 'The login data for the Snap Store produced with "snapcraft export-login"'
-    required: true
+    required: false
   snap:
     description: 'The snap file to upload to the store'
     required: true
