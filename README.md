@@ -7,8 +7,25 @@
 This is a Github Action that can be used to publish [snap
 packages](https://snapcraft.io) to the Snap Store.  In most cases, it
 will be used with the `snapcraft-build-action` action to build the
-package.  The following workflow should be sufficient for:
+package.  The following workflow should be sufficient for Snapcraft 7 or later:
 
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: snapcore/action-build@v1
+      id: build
+    - uses: snapcore/action-publish@v1
+      env:
+        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+      with:
+        snap: ${{ steps.build.outputs.snap }}
+        release: edge
+```
+
+Alternatively, on Snapcraft 6 and older:
 ```yaml
 jobs:
   build:

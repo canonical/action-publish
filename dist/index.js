@@ -3042,6 +3042,9 @@ class SnapcraftPublisher {
         this.release = options.release;
     }
     async validate() {
+        if (process.env.SNAPCRAFT_STORE_CREDENTIALS) {
+            return;
+        }
         if (!this.loginData) {
             throw new Error('login_data is empty');
         }
@@ -3077,12 +3080,16 @@ class SnapcraftPublisher {
     async publish() {
         await ensureSnapd();
         await ensureSnapcraft();
-        await this.login();
+        if (!process.env.SNAPCRAFT_STORE_CREDENTIALS) {
+            await this.login();
+        }
         try {
             await this.upload();
         }
         finally {
-            await this.logout();
+            if (!process.env.SNAPCRAFT_STORE_CREDENTIALS) {
+                await this.logout();
+            }
         }
     }
 }
