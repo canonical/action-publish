@@ -61,8 +61,7 @@ $ snapcraft export-login --snaps=PACKAGE_NAME \
       exported.txt
 ```
 
-This will produce a file `exported.txt` containing the login data,
-which should be a multi-line file starting with `[login.ubuntu.com]`.
+This will produce a file `exported.txt` containing the login data.
 The credentials can be restricted further with the `--channels` and
 `--expires` arguments if desired.
 
