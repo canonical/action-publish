@@ -20,6 +20,7 @@ jobs:
     - uses: snapcore/action-publish@v1
       env:
         SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+        SNAPCRAFT_STORE_AUTH: candid
       with:
         snap: ${{ steps.build.outputs.snap }}
         release: edge
