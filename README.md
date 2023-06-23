@@ -14,7 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: snapcore/action-build@v1
       id: build
     - uses: snapcore/action-publish@v1
@@ -31,7 +31,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - uses: snapcore/action-build@v1
       id: build
     - uses: snapcore/action-publish@v1
@@ -56,7 +56,7 @@ As well as preventing the exposure of the password, it also allows the
 credentials to be locked down to only the access the action requires:
 
 ```sh
-$ snapcraft export-login --snaps=PACKAGE_NAME \
+$ SNAPCRAFT_STORE_AUTH=candid snapcraft export-login --snaps=PACKAGE_NAME \
       --acls package_access,package_push,package_update,package_release \
       exported.txt
 ```
