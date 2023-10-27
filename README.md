@@ -20,6 +20,7 @@ jobs:
     - uses: snapcore/action-publish@v1
       env:
         SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+        SNAPCRAFT_STORE_AUTH: candid
       with:
         snap: ${{ steps.build.outputs.snap }}
         release: edge
@@ -56,7 +57,7 @@ As well as preventing the exposure of the password, it also allows the
 credentials to be locked down to only the access the action requires:
 
 ```sh
-$ snapcraft export-login --snaps=PACKAGE_NAME \
+$ SNAPCRAFT_STORE_AUTH=candid snapcraft export-login --snaps=PACKAGE_NAME \
       --acls package_access,package_push,package_update,package_release \
       exported.txt
 ```
