@@ -15,5 +15,5 @@ inputs:
     description: 'A comma separated list of channels to release the snap to'
     required: false
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
