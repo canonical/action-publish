@@ -43,7 +43,7 @@ jobs:
 
 This will build the project, upload the result to the store, and
 release it to the `edge` channel.  If the `release` input parameter is
-omitted, then the build will not be uploaded but not released.
+omitted, then the build will be uploaded but not released.
 
 
 ## Store Login
